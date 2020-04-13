@@ -1,5 +1,6 @@
 import MongoComponent from './MongoComponent';
 import { JackpotSchema } from '../schemas';
+import AppRepository from './app';
 
 /**
  * Accounts database interaction class.
@@ -55,6 +56,44 @@ class JackpotRepository extends MongoComponent{
             ).exec( (err, item) => {
                 if(err){reject(err)}
                 resolve(item);
+            });
+        });
+    }
+
+    setNonce(app){
+        return new Promise(async (resolve, reject) => {
+            let jackpot_id = (await JackpotRepository.prototype.findJackpotByApp(app))._id;
+            JackpotRepository.prototype.schema.model.findOneAndUpdate(
+                {_id: jackpot_id},
+                { $inc : { nonce : 1 } } ,{ new: true }
+            )
+            .exec( (err, jackpot) => {
+                if(err) { reject(err) }
+                resolve(jackpot);
+            });
+        });
+    }
+
+    findJackpotByApp(_id){
+        return new Promise( (resolve, reject) => {
+            AppRepository.prototype.schema.model.findById(_id)
+            .populate([
+                {
+                    path : 'addOn',
+                    model : 'AddOn',
+                    select : { '__v': 0},
+                    populate: [
+                        {
+                            path : 'jackpot',
+                            model : 'Jackpot',
+                            select : { '__v': 0}
+                        }
+                    ]
+                }
+            ])
+            .exec( (err, app) => {
+                if(err) { reject(err) }
+                resolve(app.addOn.jackpot);
             });
         });
     }

@@ -2,6 +2,7 @@ import SecuritySingleton from '../helpers/security';
 import MiddlewareSingleton from '../helpers/middleware';
 import { BitGoSingleton } from '../../logic/third-parties';
 import { getNormalizedTicker } from '../../logic/third-parties/bitgo/helpers';
+import { Jackpot } from '../../models';
 const perf = require('execution-time')();
 
 /**
@@ -25,6 +26,25 @@ async function test(message) {
     console.log(message);
 }
 
+async function betJackpot(message) {
+    console.log("Push bet jackpot");
+    const { req } = JSON.parse(message);
+    try {
+        await SecuritySingleton.verify( req );
+        let params = req.body;
+
+        // check how much is needed for the jackpot
+        let jackpot = new Jackpot(params);
+
+        // put it in the jackpot
+        await jackpot.bet();
+
+	} catch(err) {
+        console.log(err);
+	}
+}
+
 export {
-    test
-};
+    test,
+    betJackpot
+}

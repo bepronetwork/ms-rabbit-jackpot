@@ -22,7 +22,8 @@ JackpotSchema.prototype.schema =  {
         user            : { type: mongoose.Schema.Types.ObjectId, ref: 'User'}
     }],
     resultSpace         : [{type: mongoose.Schema.Types.ObjectId, ref: 'ResultSpace', required : true }],
-    bets                : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bet'}]
+    bets                : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bet'}],
+    nonce               : { type: Number, required : true, default : 0}
 }
 
 

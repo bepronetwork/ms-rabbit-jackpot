@@ -1,6 +1,6 @@
-import { PORT } from './config';
+import { CLOUDAMQP_URL } from './config';
 function connect(){
-    return require('amqplib').connect(`amqp://localhost:${PORT}`).then(conn => conn.createChannel());
+    return require('amqplib').connect(CLOUDAMQP_URL).then(conn => conn.createChannel());
   }
   function createQueue(channel, queue){
     return new Promise((resolve, reject) => {

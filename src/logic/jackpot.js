@@ -169,7 +169,6 @@ const processActions = {
 
 			let jackpot = await JackpotRepository.prototype.findJackpotById(app.addOn.jackpot);
 			let gameEcosystem = await GamesEcoRepository.prototype.findGameByMetaName("jackpot_auto");
-
 			jackpot.resultSpace = gameEcosystem.resultSpace;
 
             /* Get Bet Result */
@@ -284,7 +283,11 @@ const progressActions = {
 	__bet : async (params) => {
 		try{
 			let {jackpot, currency, user_delta, userWallet, pot, isWon, user_id, result} = params;
-			 /* Save all ResultSpaces */
+
+			pot 		= parseFloat(pot).toFixed(6);
+			user_delta 	= parseFloat(user_delta).toFixed(6);
+
+			/* Save all ResultSpaces */
 			 let dependentObjects = Object.keys(result).map( async key =>
 				await (new BetResultSpace(result[key])).register()
 			);
@@ -304,7 +307,7 @@ const progressActions = {
 			await WalletsRepository.prototype.updatePlayBalance(userWallet._id, parseFloat(user_delta) );
 
 			/* Add Bet to User Profile */
-			await UsersRepository.prototype.addBet(params.user, bet._id);
+			await UsersRepository.prototype.addBet(user_id, bet._id);
 			/* Add Bet to Event Profile */
 			await JackpotRepository.prototype.addBet(jackpot._id, bet._id);
 
@@ -332,7 +335,7 @@ const progressActions = {
 				mail.sendEmail({app_id : params.app.id, user: params.user, action : 'USER_NOTIFICATION', attributes});
 			}
 			let jackpotResult = await JackpotRepository.prototype.findJackpotById(jackpot._id);
-
+			console.log(`user ${params.user._id} received/lost: ${user_delta}`);
 			return {...params, ...jackpotResult};
 		}catch(err){
 			throw err;

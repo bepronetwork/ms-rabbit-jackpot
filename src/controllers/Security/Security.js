@@ -14,6 +14,13 @@ class Security {
         }
     }
 
+
+    generateHash(data, algorithm='sha256') {
+        return require("crypto")
+        .createHash(algorithm)
+        .update(data)
+        .digest("hex");
+    }
     hash(){
         //Hash Password
         try{

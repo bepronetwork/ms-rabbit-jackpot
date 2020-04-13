@@ -1,9 +1,12 @@
 import MiddlewareSingleton from "./middleware";
-import { AdminsRepository, PermissionRepository } from "../../db/repos";
+import { AdminsRepository, PermissionRepository, JackpotRepository } from "../../db/repos";
+import {Security as SecurityCrypt} from "../../controllers/Security";
 
 class Security{
 
-    constructor() {}
+    constructor() {
+        this.nonce = 0;
+    }
 
     checkPermission = async (permissions = [], admin) => {
         try {
@@ -23,39 +26,29 @@ class Security{
         return false;
     };
 
-    verify = async ({type, req, permissions=[]}) => {
-        try{
-            let id = req.body[type];
-            if(type=="admin") {
-                if(!(await this.checkPermission(permissions, id))){
-                    throw new Error();
-                }
-            }
-            var bearerHeader = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
-            var payload = JSON.parse(req.headers['payload']); // Payload with Id
-            if(typeof bearerHeader !== 'undefined'){
-                // Split the Space
-                const bearer = bearerHeader.split(' ');
-                // Get Token From Array
-                const bearerToken = bearer[1];
-                let verified = MiddlewareSingleton.verify({token : bearerToken, payload, id, isUser: (type=="user")});
-                if(!verified){throw new Error()}
-                return verified;
-            } else {
+    // async getNonce(app) {
+    //     if(this.nonce!=0){
+    //         return this.nonce;
+    //     }
+    //     this.nonce = await JackpotRepository.prototype.findJackpotByApp(app).nonce;
+    //     return this.nonce;
+    // }
+    // async setNonce(app) {
+    //     await JackpotRepository.prototype.setNonce(app);
+    //     this.nonce++;
+    // }
+    verify = async (req) => {
+        try {
+            if( SecurityCrypt.prototype.generateHash( JSON.stringify( req.body ).trim()) != SecurityCrypt.prototype.decryptData( req.hash) ) {
                 throw new Error();
             }
-        }catch(err){
-            if(err.code!=undefined) {
-                throw err;
-            } else {
-                throw {
-                    code : 304,
-                    messsage : 'Forbidden Access'
-                }
+        } catch(err) {
+            throw {
+                code : 304,
+                message : 'Forbidden Access'
             }
         }
     }
-
 }
 
 let SecuritySingleton = new Security();

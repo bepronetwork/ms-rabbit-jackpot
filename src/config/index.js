@@ -1,11 +1,12 @@
 require('dotenv').config();
 const config = require('./config.json');
 import { changeAllStringsInObjectRecursive } from '../helpers/object.js';
-export const PORT = process.env.PORT;
 
 /* ENV */
 
 export const ENV = process.env.ENV;
+
+export const CLOUDAMQP_URL =  process.env.CLOUDAMQP_URL || "amqp://localhost:5672";
 
 export const DB_USER =  process.env.DB_USER;
 
