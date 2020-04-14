@@ -202,11 +202,12 @@ const processActions = {
 
             if(isWon){
                 /* User Won Bet */
-				user_delta = parseFloat(limit.pot+lossAmount);
-            } else {
+				user_delta 	= parseFloat(limit.pot+lossAmount);
+				pot	 		= -parseFloat(limit.pot);
+			} else {
 				/* User Lost Bet */
 				user_delta = parseFloat(-lossAmount);
-				pot = parseFloat(limit.pot) + parseFloat(lossAmount);
+				pot = parseFloat(lossAmount);
 			}
 
 			currency = await CurrencyRepository.prototype.findById(currency);
@@ -287,7 +288,7 @@ const progressActions = {
 		try{
 			let {jackpot, currency, user_delta, userWallet, pot, isWon, user_id, result} = params;
 
-			pot 		= parseFloat(pot).toFixed(6);
+			let addPot 	= pot;
 			user_delta 	= parseFloat(user_delta).toFixed(6);
 
 			/* Save all ResultSpaces */
@@ -306,7 +307,7 @@ const progressActions = {
 			/* Save Bet */
 			let bet = await (new Bet(params).save());
 
-			await JackpotRepository.prototype.updatePot(jackpot._id, currency, parseFloat(pot) );
+			await JackpotRepository.prototype.updatePot(jackpot._id, currency, addPot );
 
 			/* Add Bet to User Profile */
 			await UsersRepository.prototype.addBet(user_id, bet._id);
@@ -318,7 +319,7 @@ const progressActions = {
 				/* Save result win jackpot */
 				await JackpotRepository.prototype.addWinResult(jackpot._id, {
 					user: user_id,
-					winAmount: pot,
+					winAmount: user_delta,
 					bet: bet._id,
 					currency
 				});
@@ -327,13 +328,13 @@ const progressActions = {
 				PusherSingleton.trigger({
 					channel_name: user_id,
 					isPrivate: true,
-					message: `You won the jackpot ${parseFloat(pot)}`,
+					message: `You won the jackpot ${parseFloat(user_delta)}`,
 					eventType: 'JACKPOT'
 				})
 				/* Send Email */
 				let mail = new Mailer();
 				let attributes = {
-					TEXT: `You won the jackpot ${parseFloat(pot)}`
+					TEXT: `You won the jackpot ${parseFloat(user_delta)}`
 				};
 				mail.sendEmail({app_id : params.app.id, user: params.user, action : 'USER_NOTIFICATION', attributes});
 			}

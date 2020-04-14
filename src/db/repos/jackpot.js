@@ -33,11 +33,7 @@ class JackpotRepository extends MongoComponent{
         return new Promise( (resolve,reject) => {
             JackpotRepository.prototype.schema.model.updateOne(
                 {_id, "limits.currency": currency},
-                {
-                    $set: {
-                        "limits.$.pot" : parseFloat(pot)
-                    }
-                }
+                { $inc : { "limits.$.pot" : parseFloat(pot) } } ,{ new: true }
             )
             .exec( async (err, item) => {
                 if(err){reject(err)}
