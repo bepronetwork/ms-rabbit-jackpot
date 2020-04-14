@@ -181,6 +181,7 @@ const processActions = {
                 edge : jackpot.edge
             });
 
+			// N% to jackpot
 			let resultEdge = params.result.map(r => {
 				return {
 					place: r.place,
@@ -188,11 +189,13 @@ const processActions = {
 				};
 			});
 
-			let limit = jackpot.limits.find((lm) => (new String(lm.currency).toString()) == (new String(currency).toString()) );
-
+			// possible loss amount
 			let lossAmount = resultEdge.reduce( (acc, result) => {
 				return acc + parseFloat(result.value);
 			}, 0);
+
+			// get limiters of jackpot
+			let limit = jackpot.limits.find((lm) => (new String(lm.currency).toString()) == (new String(currency).toString()) );
 
 			let user_delta = 0;
 			let pot 	   = 0;
@@ -304,14 +307,14 @@ const progressActions = {
 			let bet = await (new Bet(params).save());
 
 			await JackpotRepository.prototype.updatePot(jackpot._id, currency, parseFloat(pot) );
-			await WalletsRepository.prototype.updatePlayBalance(userWallet._id, parseFloat(user_delta) );
 
 			/* Add Bet to User Profile */
 			await UsersRepository.prototype.addBet(user_id, bet._id);
-			/* Add Bet to Event Profile */
+			/* Add Bet to Jackpot */
 			await JackpotRepository.prototype.addBet(jackpot._id, bet._id);
 
 			if(isWon) {
+				await WalletsRepository.prototype.updatePlayBalance(userWallet._id, parseFloat(user_delta) );
 				/* Save result win jackpot */
 				await JackpotRepository.prototype.addWinResult(jackpot._id, {
 					user: user_id,
@@ -334,9 +337,9 @@ const progressActions = {
 				};
 				mail.sendEmail({app_id : params.app.id, user: params.user, action : 'USER_NOTIFICATION', attributes});
 			}
-			let jackpotResult = await JackpotRepository.prototype.findJackpotById(jackpot._id);
+			// let jackpotResult = await JackpotRepository.prototype.findJackpotById(jackpot._id);
 			console.log(`user ${params.user._id} received/lost: ${user_delta}`);
-			return {...params, ...jackpotResult};
+			return params;
 		}catch(err){
 			throw err;
 		}
