@@ -21,11 +21,6 @@ const perf = require('execution-time')();
  * @param {*} req
  * @param {*} res
  */
-
-async function test(message) {
-    console.log(message);
-}
-
 async function betJackpot(message) {
     console.log("Push bet jackpot");
     const { req } = JSON.parse(message);
@@ -45,6 +40,5 @@ async function betJackpot(message) {
 }
 
 export {
-    test,
     betJackpot
 }
