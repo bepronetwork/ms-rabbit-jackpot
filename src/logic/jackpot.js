@@ -182,17 +182,15 @@ const processActions = {
             });
 
 			// N% to jackpot
-			let resultEdge = params.result.map(r => {
-				return {
-					place: r.place,
-					value: (parseFloat(r.value) * parseFloat(jackpot.edge) * 0.01)
-				};
-			});
+			// let resultEdge = params.result.map(r => {
+			// 	return {
+			// 		place: r.place,
+			// 		value: (parseFloat(r.value) * parseFloat(jackpot.edge) * 0.01)
+			// 	};
+			// });
 
 			// possible loss amount
-			let lossAmount = resultEdge.reduce( (acc, result) => {
-				return acc + parseFloat(result.value);
-			}, 0);
+			let lossAmount = params.jackpotBet;
 
 			// get limiters of jackpot
 			let limit = jackpot.limits.find((lm) => (new String(lm.currency).toString()) == (new String(currency).toString()) );
