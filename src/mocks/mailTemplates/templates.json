@@ -1,0 +1,14 @@
+{
+    "registerAdmin" : {
+        "templateId" : 1,
+        "listIds": [2]
+    },
+    "registerApp": {
+        "templateId" : 3,
+        "listIds": [2]
+    },
+    "multiplesAdmins": {
+        "templateId" : 4,
+        "listIds": [2]
+    }
+}
