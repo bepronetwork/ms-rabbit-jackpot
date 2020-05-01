@@ -10,7 +10,6 @@ const queue = require("./queue");
 class App {
 
     async __init__() {
-        globals.verify();
         await globals.__init__();
         Logger.success("Online");
         return ;
