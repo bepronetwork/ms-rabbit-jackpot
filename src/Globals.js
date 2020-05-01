@@ -15,8 +15,6 @@ class Globals{
     }
 
     async __init__(){
-        /* Init BitGo */
-        await BitGoSingleton.__init__();
         /* Init Mongo */
         await this.startDatabase();
     }
