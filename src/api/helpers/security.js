@@ -39,7 +39,7 @@ class Security{
     // }
     verify = async (req) => {
         try {
-            if( SecurityCrypt.prototype.generateHash( JSON.stringify( req.body ).trim()) != SecurityCrypt.prototype.decryptData( req.hash) ) {
+            if( SecurityCrypt.prototype.generateHash( JSON.stringify( req.body ).trim()) != SecurityCrypt.prototype.decryptData(req.hash) ) {
                 throw new Error();
             }
         } catch(err) {

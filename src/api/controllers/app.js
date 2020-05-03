@@ -1,7 +1,4 @@
 import SecuritySingleton from '../helpers/security';
-import MiddlewareSingleton from '../helpers/middleware';
-import { BitGoSingleton } from '../../logic/third-parties';
-import { getNormalizedTicker } from '../../logic/third-parties/bitgo/helpers';
 import { Jackpot } from '../../models';
 const perf = require('execution-time')();
 
@@ -22,8 +19,8 @@ const perf = require('execution-time')();
  * @param {*} res
  */
 async function betJackpot(message) {
-    console.log("Bet jackpot");
     const { req } = JSON.parse(message);
+    console.log("Bet jackpot");
     try {
         await SecuritySingleton.verify( req );
         let params = req.body;
