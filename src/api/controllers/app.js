@@ -22,7 +22,7 @@ const perf = require('execution-time')();
  * @param {*} res
  */
 async function betJackpot(message) {
-    console.log("Push bet jackpot");
+    console.log("Bet jackpot");
     const { req } = JSON.parse(message);
     try {
         await SecuritySingleton.verify( req );
