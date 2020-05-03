@@ -15,42 +15,9 @@ class Jackpot extends ModelComponent{
                 db : db,
                 self : null,
                 params : params,
-                children : [
-                ]
+                children : []
             }
             );
-    }
-
-    async editEdgeJackpot(){
-        try{
-            return await this.process('EditEdgeJackpot');
-        }catch(err){
-            throw err;
-        }
-    }
-
-    async register(){
-        try{
-            return await this.process('Register');
-        }catch(err){
-            throw err;
-        }
-    }
-
-    async normalizeSpaceResult(){
-        try{
-            return await this.process('NormalizeSpaceResult');
-        }catch(err){
-            throw err;
-        }
-    }
-
-    async percentage(){
-        try{
-            return await this.process('Percentage');
-        }catch(err){
-            throw err;
-        }
     }
 
     async bet(){
