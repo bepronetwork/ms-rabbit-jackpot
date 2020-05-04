@@ -82,6 +82,7 @@ const betResolvingActions = {
 const processActions = {
     __auto : async (params) => {
         try{
+            console.lgo("here")
             const { currency } = params;
 
             let game = await GamesRepository.prototype.findGameById(params.game);
@@ -92,7 +93,7 @@ const processActions = {
 
             /* No Mapping Error Verification */
             if(!app || (app._id != params.app)){throwError('APP_NOT_EXISTENT')}
-            if(!game){throwError('GAME_NOT_EXISTENT')}
+            if(!game || (game.metaName != 'jackpot_auto')){throwError('GAME_NOT_EXISTENT')}
             if(!user){throwError('USER_NOT_EXISTENT')}
             if(maxBetValue){if(maxBetValue === undefined || maxBetValue === null){throwError('MAX_BET_NOT_EXISTENT')}}
             
@@ -149,17 +150,7 @@ const processActions = {
             }else{
                 /* User Lost Bet */
                 user_delta = parseFloat(-Math.abs(totalBetAmount));
-                if(isUserAffiliated){
-                    /* Get Amounts and Affiliate Cuts */
-                    var affiliateReturnResponse = getAffiliatesReturn({
-                        affiliateLink : affiliateLink,
-                        currency : currency,
-                        lostAmount : totalBetAmount
-                    })
-                    /* Map */
-                    affiliateReturns = affiliateReturnResponse.affiliateReturns;
-                    totalAffiliateReturn = affiliateReturnResponse.totalAffiliateReturn;
-                }
+                totalAffiliateReturn = 0;
                 /* Set App Cut without Affiliate Return */
                 app_delta = parseFloat(Math.abs(totalBetAmount - totalAffiliateReturn));
             }
@@ -247,14 +238,6 @@ const progressActions = {
         await WalletsRepository.prototype.updatePlayBalance(wallet._id, user_delta);
         /* Update App PlayBalance */
         await WalletsRepository.prototype.updatePlayBalance(appWallet._id, app_delta);
-        /* Update Balance of Affiliates */
-        if(isUserAffiliated){
-            let userAffiliatedWalletsPromises = affiliateReturns.map( async a => {
-                return await WalletsRepository.prototype.updatePlayBalance(a.parentAffiliateWalletId, a.amount)
-            })
-            await Promise.all(userAffiliatedWalletsPromises);
-        }
-        
 		/* Add Bet to User Profile */
 		await UsersRepository.prototype.addBet(params.user, bet);
 		/* Add Bet to Event Profile */
