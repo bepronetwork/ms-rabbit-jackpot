@@ -82,7 +82,6 @@ const betResolvingActions = {
 const processActions = {
     __auto : async (params) => {
         try{
-            console.lgo("here")
             const { currency } = params;
 
             let game = await GamesRepository.prototype.findGameById(params.game);
