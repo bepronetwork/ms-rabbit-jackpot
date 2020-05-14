@@ -36,8 +36,9 @@ const betJackpotActions = {
     auto : (params) => {
 		var hmca_hash, outcome, isWon, outcomeResultSpace;
 
-		hmca_hash = CryptographySingleton.generateRandomResult(params.serverSeed, params.clientSeed, params.nonce),
-		outcome = CryptographySingleton.hexToInt(hmca_hash)
+		hmca_hash = CryptographySingleton.generateRandomResult(params.serverSeed, params.clientSeed, params.nonce);
+        outcome = CryptographySingleton.hexToInt(hmca_hash);
+        console.log("outcome", outcome)
         outcomeResultSpace 	= CasinoLogicSingleton.fromOutcometoResultSpace(outcome, params.resultSpace)
 
         var { isWon } = betJackpotActions.calculateWin({
