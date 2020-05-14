@@ -24,6 +24,7 @@ class CasinoLogic{
     fromOutcometoResultSpace(outcome, resultSpace){
         let currentSpace = 0;
         let res;
+        console.log("outcome", outcome, resultSpace.length);
         let resultSpaceArray = resultSpace.map( (item, index) => {
             let spaces = item.probability*100;
             let nextSpace = currentSpace+spaces;
@@ -36,7 +37,8 @@ class CasinoLogic{
             }
             currentSpace = nextSpace;
             return res;
-        })
+        });
+        console.log("resultSpaceArray",resultSpaceArray.length)
         resultSpaceArray.map( (item) => {
             if(outcome >= item.start && outcome < item.end){
                 res = item;
