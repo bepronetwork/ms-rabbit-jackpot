@@ -318,7 +318,7 @@ const progressActions = {
 				});
 
 				/* Send Notification */
-				await PusherSingleton.trigger({
+				PusherSingleton.trigger({
 					channel_name: user_id,
 					isPrivate: true,
 					message: `You won the jackpot ${parseFloat(user_delta)}`,

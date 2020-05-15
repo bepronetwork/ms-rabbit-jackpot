@@ -46,7 +46,6 @@ class Mailer {
 
         } catch (err) {
             Logger.error(err);
-            console.log("Full Stack Error ", err)
         }
     }
 
