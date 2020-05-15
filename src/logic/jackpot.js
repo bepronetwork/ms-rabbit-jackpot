@@ -24,6 +24,8 @@ let __private = {};
 const betJackpotActions = {
 	calculateWin: ({userResultSpace, outcomeResultSpace}) => {
     	try {
+            console.log("outcomeResultSpace", outcomeResultSpace);
+            console.log("userResultSpace", userResultSpace.length, userResultSpace[0])
 			var el = userResultSpace.find( object => parseInt(object.place) == parseInt(outcomeResultSpace.index));
 			const isWon = (!el) ? false : true;
             return {
