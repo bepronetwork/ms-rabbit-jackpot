@@ -41,11 +41,9 @@ class CasinoLogic{
         resultSpaceArray.map( (item) => {
             i++;
             if(outcome >= item.start && outcome < item.end){
-                console.log("here", outcome, item.start, item.end)
                 res = item;
             }
         })
-        console.log("i", i)
         return res;
     }
     
