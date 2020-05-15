@@ -24,8 +24,6 @@ let __private = {};
 const betJackpotActions = {
 	calculateWin: ({userResultSpace, outcomeResultSpace}) => {
     	try {
-            console.log("outcomeResultSpace", outcomeResultSpace);
-            console.log("userResultSpace", userResultSpace.length, userResultSpace[0])
 			var el = userResultSpace.find( object => parseInt(object.place) == parseInt(outcomeResultSpace.index));
 			const isWon = (!el) ? false : true;
             return {
@@ -112,7 +110,6 @@ const processActions = {
 			let amountTest = toTestResult.reduce( (acc, result) => {
 				return acc + parseFloat(result.value);
 			}, 0);
-			console.log("To bet Amount: ",  amountTest);
 
 			return {
 				percentage
@@ -177,8 +174,6 @@ const processActions = {
                 place : CasinoLogicSingleton.fromOutcometoResultSpace(CryptographySingleton.hexToInt(CryptographySingleton.generateRandomResult(CryptographySingleton.generateSeed(), CryptographySingleton.generateSeed(), nonce)), jackpot.resultSpace).index,
                 value : jackpotBet
             }];
-
-            console.log("resultBetted", resultBetted)
 
             /* Get Bet Result */
             let { isWon, outcomeResultSpace } = betJackpotActions.auto({
