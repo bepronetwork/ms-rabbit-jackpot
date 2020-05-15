@@ -41,7 +41,7 @@ const betJackpotActions = {
 		hmca_hash = CryptographySingleton.generateRandomResult(params.serverSeed, params.clientSeed, params.nonce);
         outcome = CryptographySingleton.hexToInt(hmca_hash);
         outcomeResultSpace 	= CasinoLogicSingleton.fromOutcometoResultSpace(outcome, params.resultSpace)
-        
+        console.log("params.result", params.result)
         var { isWon } = betJackpotActions.calculateWin({
             userResultSpace : params.result,
             outcomeResultSpace : outcomeResultSpace
@@ -173,11 +173,11 @@ const processActions = {
             jackpot.resultSpace = gameEcosystem.resultSpace;
             
             let resultBetted = {
-                place : CasinoLogicSingleton.fromOutcometoResultSpace(CryptographySingleton.hexToInt(CryptographySingleton.generateRandomResult(serverSeed, clientSeed, nonce)), jackpot.resultSpace),
+                place : CasinoLogicSingleton.fromOutcometoResultSpace(CryptographySingleton.hexToInt(CryptographySingleton.generateRandomResult(serverSeed, clientSeed, nonce)), jackpot.resultSpace).index,
                 value : jackpotBet
             }
-            
-            console.log("resultBetted", resultBetted.place)
+
+            console.log("resultBetted", resultBetted)
 
             /* Get Bet Result */
             let { isWon, outcomeResultSpace } = betJackpotActions.auto({
