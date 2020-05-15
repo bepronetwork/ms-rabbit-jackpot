@@ -172,7 +172,7 @@ const processActions = {
             jackpot.resultSpace = gameEcosystem.resultSpace;
             
             let resultBetted = [{
-                place : CasinoLogicSingleton.fromOutcometoResultSpace(CryptographySingleton.hexToInt(CryptographySingleton.generateRandomResult(serverSeed, clientSeed, nonce)), jackpot.resultSpace).index,
+                place : CasinoLogicSingleton.fromOutcometoResultSpace(CryptographySingleton.hexToInt(CryptographySingleton.generateRandomResult(CryptographySingleton.generateSeed(), CryptographySingleton.generateSeed(), nonce)), jackpot.resultSpace).index,
                 value : jackpotBet
             }];
 
@@ -318,7 +318,7 @@ const progressActions = {
 				});
 
 				/* Send Notification */
-				PusherSingleton.trigger({
+				await PusherSingleton.trigger({
 					channel_name: user_id,
 					isPrivate: true,
 					message: `You won the jackpot ${parseFloat(user_delta)}`,
@@ -328,7 +328,8 @@ const progressActions = {
 				let mail = new Mailer();
 				let attributes = {
 					TEXT: `You won the jackpot ${parseFloat(user_delta)}`
-				};
+                };
+                
 				mail.sendEmail({app_id : params.app.id, user: params.user, action : 'USER_NOTIFICATION', attributes});
 			}
 
