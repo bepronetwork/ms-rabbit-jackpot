@@ -44,7 +44,6 @@ const betJackpotActions = {
             userResultSpace : params.result,
             outcomeResultSpace : outcomeResultSpace
         });
-        console.log("outcome", outcome, isWon)
 
         return { outcomeResultSpace, isWon, outcome, hmca_hash };
     }
