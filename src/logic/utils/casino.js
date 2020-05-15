@@ -78,17 +78,14 @@ class CasinoLogic{
         try{
             // TO DO : Check Errors in the Inputs (Positive, Negative, )
             /* Remove Duplicated Values from Odd Calculation */
-            return userResultSpace.reduce( (array , item) => {
+            return userResultSpace.reduce( (acc , item) => {
                 if (findWithAttr(array, 'place', item.place) < 0 ){
                     if(typeof item.value != 'number'){throwError('BAD_BET')}
                     if(item.value <= 0){ throwError('BAD_BET')}
-                    array.push({
-                        place : item.place,
-                        value : parseFloat(item.value)
-                    });
+                    return acc + parseFloat(item.value);
                 } 
-                return array;
-            },[]);
+            },0);
+            
         }catch(err){
             throw err;
         }
