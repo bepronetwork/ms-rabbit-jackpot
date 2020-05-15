@@ -157,12 +157,14 @@ const processActions = {
             let user = await UsersRepository.prototype.findUserById(params.user);
 			let app  = await AppRepository.prototype.findAppById(user.app_id);
 
-			/* Get balance by wallet type */
-			const userWallet = user.wallet.find( w => new String(w.currency._id).toString() == new String(currency).toString());
-
             /* No Mapping Error Verification */
             if(!app || (app._id != params.app)){throwError('APP_NOT_EXISTENT')}
             if(!user){throwError('USER_NOT_EXISTENT')};
+
+			/* Get balance by wallet type */
+			const userWallet = user.wallet.find( w => new String(w.currency._id).toString() == new String(currency).toString());
+            const appWallet  = app.wallet.find( w => new String(w.currency._id).toString() == new String(currency).toString());
+            if(!appWallet || !userWallet){throwError('CURRENCY_NOT_EXISTENT')};
 
             var serverSeed = CryptographySingleton.generateSeed();
             var clientSeed = CryptographySingleton.generateSeed();
@@ -200,7 +202,7 @@ const processActions = {
 				pot_delta	= -parseFloat(limit.pot);
 			} else {
 				/* User Lost Bet */
-				user_delta = parseFloat(-jackpotBet);
+				user_delta = 0;
 				pot_delta = parseFloat(jackpotBet);
 			}
 
@@ -225,7 +227,8 @@ const processActions = {
 				jackpot,
 				user_delta,
 				jackpotBet,
-				userWallet,
+                userWallet,
+                appWallet,
 				app,
 				user
             }
@@ -280,9 +283,7 @@ const progressActions = {
 	},
 	__bet : async (params) => {
 		try{
-			let {jackpot, currency, user_delta, userWallet, pot_delta, isWon, user_id, result} = params;
-
-			user_delta 	= parseFloat(user_delta).toFixed(6);
+			let {jackpot, currency, user_delta, userWallet, pot_delta, isWon, user_id, result, appWallet} = params;
 
 			/* Save all ResultSpaces */
 			 let dependentObjects = Object.keys(result).map( async key =>
@@ -308,7 +309,10 @@ const progressActions = {
 			await JackpotRepository.prototype.addBet(jackpot._id, bet._id);
 
 			if(isWon) {
-				await WalletsRepository.prototype.updatePlayBalance(userWallet._id, parseFloat(user_delta) );
+                /* Add balance for user */
+                await WalletsRepository.prototype.updatePlayBalance(userWallet._id, parseFloat(user_delta) );
+                /* Remove balance for app */
+                await WalletsRepository.prototype.updatePlayBalance(appWallet._id, -parseFloat(user_delta) );
 				/* Save result win jackpot */
 				await JackpotRepository.prototype.addWinResult(jackpot._id, {
 					user: user_id,
