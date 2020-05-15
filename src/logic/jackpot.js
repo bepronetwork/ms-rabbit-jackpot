@@ -152,8 +152,8 @@ const processActions = {
 	},
 	__bet : async (params) => {
 		try{
-            let { currency } = params;
-
+            let { currency, jackpotBet, nonce } = params;
+            console.log("jackpotBet", jackpotBet);
 			let game = await GamesRepository.prototype.findGameById(params.game);
             let user = await UsersRepository.prototype.findUserById(params.user);
 			let app  = await AppRepository.prototype.findAppById(user.app_id);
@@ -163,51 +163,46 @@ const processActions = {
 
             /* No Mapping Error Verification */
             if(!app || (app._id != params.app)){throwError('APP_NOT_EXISTENT')}
-            if(!user){throwError('USER_NOT_EXISTENT')}
+            if(!user){throwError('USER_NOT_EXISTENT')};
 
-            let resultBetted = CasinoLogicSingleton.normalizeBet(params.result);
             var serverSeed = CryptographySingleton.generateSeed();
             var clientSeed = CryptographySingleton.generateSeed();
 
 			let jackpot = await JackpotRepository.prototype.findJackpotById(app.addOn.jackpot);
 			let gameEcosystem = await GamesEcoRepository.prototype.findGameByMetaName("jackpot_auto");
-			jackpot.resultSpace = gameEcosystem.resultSpace;
+            jackpot.resultSpace = gameEcosystem.resultSpace;
+            
+            let resultBetted = {
+                place : CasinoLogicSingleton.fromOutcometoResultSpace(CryptographySingleton.hexToInt(CryptographySingleton.generateRandomResult(serverSeed, clientSeed, nonce)), jackpot.resultSpace),
+                value : jackpotBet
+            }
+            
+            console.log("resultBetted", resultBetted.place)
 
             /* Get Bet Result */
             let { isWon, outcomeResultSpace } = betJackpotActions.auto({
                 serverSeed : serverSeed,
                 clientSeed : clientSeed,
-                nonce : params.nonce,
+                nonce : nonce,
                 resultSpace : jackpot.resultSpace,
                 result : resultBetted,
                 edge : jackpot.edge
             });
 
-			// N% to jackpot
-			// let resultEdge = params.result.map(r => {
-			// 	return {
-			// 		place: r.place,
-			// 		value: (parseFloat(r.value) * parseFloat(jackpot.edge) * 0.01)
-			// 	};
-			// });
-
-			// possible loss amount
-			let lossAmount = params.jackpotBet;
-
-			// get limiters of jackpot
+			// get jackpot of this currency
 			let limit = jackpot.limits.find((lm) => (new String(lm.currency).toString()) == (new String(currency).toString()) );
 
 			let user_delta = 0;
-			let pot 	   = 0;
+			let pot_delta  = 0;
 
             if(isWon){
                 /* User Won Bet */
-				user_delta 	= parseFloat(limit.pot+lossAmount);
-				pot	 		= -parseFloat(limit.pot);
+				user_delta 	= parseFloat(limit.pot+jackpotBet);
+				pot_delta	= -parseFloat(limit.pot);
 			} else {
 				/* User Lost Bet */
-				user_delta = parseFloat(-lossAmount);
-				pot = parseFloat(lossAmount);
+				user_delta = parseFloat(-jackpotBet);
+				pot_delta = parseFloat(jackpotBet);
 			}
 
 			currency = await CurrencyRepository.prototype.findById(currency);
@@ -218,19 +213,19 @@ const processActions = {
 				serverHashedSeed    : CryptographySingleton.hashSeed(serverSeed),
 				fee 				: 0,
 				timestamp   		: new Date(),
-				betAmount 			: lossAmount,
+				betAmount 			: jackpotBet,
 				game    			: game._id,
 				result 				: resultBetted,
 				currency 			: currency._id,
 				user_id 			: user._id,
 				outcomeResultSpace,
 				serverSeed,
-				pot,
+				pot_delta,
 				clientSeed,
 				isWon,
 				jackpot,
 				user_delta,
-				lossAmount,
+				jackpotBet,
 				userWallet,
 				app,
 				user
@@ -286,9 +281,8 @@ const progressActions = {
 	},
 	__bet : async (params) => {
 		try{
-			let {jackpot, currency, user_delta, userWallet, pot, isWon, user_id, result} = params;
+			let {jackpot, currency, user_delta, userWallet, pot_delta, isWon, user_id, result} = params;
 
-			let addPot 	= pot;
 			user_delta 	= parseFloat(user_delta).toFixed(6);
 
 			/* Save all ResultSpaces */
@@ -307,7 +301,7 @@ const progressActions = {
 			/* Save Bet */
 			let bet = await (new Bet(params).save());
 
-			await JackpotRepository.prototype.updatePot(jackpot._id, currency, addPot );
+			await JackpotRepository.prototype.updatePot(jackpot._id, currency, pot_delta );
 
 			/* Add Bet to User Profile */
 			await UsersRepository.prototype.addBet(user_id, bet._id);
@@ -338,8 +332,8 @@ const progressActions = {
 				};
 				mail.sendEmail({app_id : params.app.id, user: params.user, action : 'USER_NOTIFICATION', attributes});
 			}
-			// let jackpotResult = await JackpotRepository.prototype.findJackpotById(jackpot._id);
-			console.log(`user ${params.user._id} received/lost: ${user_delta}`);
+
+            console.log(`user ${params.user._id} received/lost: ${user_delta}`);
 			return params;
 		}catch(err){
 			throw err;
