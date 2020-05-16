@@ -149,9 +149,8 @@ const processActions = {
             }else{
                 /* User Lost Bet */
                 user_delta = parseFloat(-Math.abs(totalBetAmount));
-                totalAffiliateReturn = 0;
                 /* Set App Cut without Affiliate Return */
-                app_delta = parseFloat(Math.abs(totalBetAmount - totalAffiliateReturn));
+                app_delta = 0;
             }
 
             var possibleWinBalance = parseFloat(possibleWinAmount + userBalance);
