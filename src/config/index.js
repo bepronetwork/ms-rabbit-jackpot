@@ -57,17 +57,19 @@ export const PUSHER_APP_SECRET = process.env.PUSHER_APP_SECRET;
 /* Later to be change with route to change price */
 export const PRICE_VIRTUAL_CURRENCY_GLOBAL = 0.001;
 
+export const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
+
 /* Variables */
 
 var ETH_NETWORK = config.eth;
 
-var DB_MONGO = config.mongo;
 
 /**
  * @function SET_ENV
  */
 
-DB_MONGO = {
+
+var DB_MONGO = {
     "connection_string" : process.env.MONGO_URL,
     "dbs" : {
         "main" : process.env.MONGO_MAIN,
@@ -85,6 +87,5 @@ if(ETH_RPC_URL){
 }
 
 export {
-    ETH_NETWORK,
-    DB_MONGO
+    ETH_NETWORK
 }
