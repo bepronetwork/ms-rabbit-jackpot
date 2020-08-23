@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import CasinoContract from "./logic/eth/CasinoContract";
 import interfaces from "./logic/eth/interfaces";
 import ERC20TokenContract from "./logic/eth/ERC20Contract";
-import { ETH_NETWORK, ETH_NET_NAME, DB_MONGO } from './config';
+import { ETH_NETWORK, ETH_NET_NAME, MONGO_CONNECTION_STRING } from './config';
 import { IPRunning } from "./helpers/network";
 import { Logger } from "./helpers/logger";
 import bluebird from 'bluebird';
@@ -81,12 +81,12 @@ class Globals{
         // Main DB
         this.main_db = new Mongoose();
         this.main_db.set('useFindAndModify', false);
-        await this.main_db.connect(DB_MONGO.connection_string + DB_MONGO.dbs.main, { useNewUrlParser: true, useUnifiedTopology: true});
+        await this.main_db.connect(`${MONGO_CONNECTION_STRING}/main?ssl=true&authSource=admin&retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true});
         this.main_db.Promise = bluebird;
         // Ecosystem DB
         this.ecosystem_db = new Mongoose();
         this.ecosystem_db.set('useFindAndModify', false);
-        await this.ecosystem_db.connect(DB_MONGO.connection_string + DB_MONGO.dbs.ecosystem, { useNewUrlParser: true, useUnifiedTopology: true});
+        await this.ecosystem_db.connect(`${MONGO_CONNECTION_STRING}/ecosystem?ssl=true&authSource=admin&retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true});
         this.ecosystem_db.Promise = bluebird;
         // Main DB
         this.default = new Mongoose();
