@@ -8,13 +8,7 @@ export const ENV = process.env.ENV;
 
 export const CLOUDAMQP_URL =  process.env.CLOUDAMQP_URL || "amqp://localhost:5672";
 
-export const DB_USER =  process.env.DB_USER;
-
-export const DB_PASSWORD =  process.env.DB_PASSWORD;
-
 export const ETH_TEST_NET = process.env.ETH_NET; 
-
-export const MONGO_ID = process.env.MONGO_ID; 
 
 export const INFURA_KEY = process.env.INFURA_KEY; 
 
@@ -73,6 +67,17 @@ var ETH_NETWORK = config.eth;
 /**
  * @function SET_ENV
  */
+
+
+var DB_MONGO = {
+    "connection_string" : process.env.MONGO_URL,
+    "dbs" : {
+        "main" : process.env.MONGO_MAIN,
+        "ecosystem" : process.env.MONGO_ECOSYSTEM,
+        "redis" : process.env.MONGO_REDIS
+    }
+};
+
 
 if(ETH_RPC_URL){
     ETH_NETWORK = ETH_RPC_URL
