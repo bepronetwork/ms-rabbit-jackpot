@@ -25,9 +25,4 @@ Finally, we started the project with:
 - Endpoint documentation: https://betprotocol.readme.io/reference
 - NodeJS installation: https://nodejs.org/en/
 - General documentation BEPRO.NETWORK operation: https://www.notion.so/betprotocol/BEPRO-NETWORK-c3d96d49ccc04f49b07ea9ea8fd5c149
-- SendInBlue service: https://pt.sendinblue.com/
-- GetStream service: https://getstream.io/
-- GetMati service: https://www.getmati.com/
-- Crisp service: https://crisp.chat/en/
-- Pusher service: https://dashboard.pusher.com/
 
